@@ -26,6 +26,7 @@ function App() {
           <Route path="/inscription/insertOrUpdateInscription" element={<InsertOrUpdateInscription />} />
           <Route path="/inscription/deleteInscription" element={<DeleteInscription />} />
           <Route path="/inscription/getRegisteredUsers/:activiteId" element={<RegisteredUsers />} />
+          
         </Routes>
       </div>
     </Router>

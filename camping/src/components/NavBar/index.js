@@ -10,7 +10,7 @@ const Navbar = () => {
           <Link to="/auth/login" className="text-white hover:underline">Se connecter</Link>
           <Link to="/compte/allCompte" className="text-white hover:underline">Comptes</Link>
           <Link to="/creneaux/allCreneaux" className="text-white hover:underline">Créneaux</Link>
-          <Link to="/inscription/insertOrUpdateInscription" className="text-white hover:underline">Inscriptions</Link>
+          <Link to="/creneaux/compteBloque" className="text-white hover:underline">Comptes Bloqués</Link>
         </div>
       </div>
     </nav>

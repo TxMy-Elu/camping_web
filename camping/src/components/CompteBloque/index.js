@@ -4,11 +4,41 @@ import API_BASE_URL from '../../config';
 
 const CompteBloque = () => {
   const [comptesBloques, setComptesBloques] = useState([]);
+    const [error, setError] = useState("");
 
   useEffect(() => {
-    axios.get(`${API_BASE_URL}/compte/compteBloque`)
-      .then(response => setComptesBloques(response.data))
-      .catch(error => console.error('Error fetching comptes bloqués:', error));
+    const fetchCreneaux = async () => {
+      const token = localStorage.getItem("token"); // Récupérer le token du localStorage
+      if (!token) {
+        setError("Token non trouvé");
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          "http://localhost:8080/creneaux/allCreneaux",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`, // Ajouter le token dans l'en-tête Authorization
+              "Content-Type": "application/",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Échec de la récupération des créneaux");
+        }
+
+        const data = await response.json();
+        //setCreneaux(data); // Mettre à jour l'état avec les données récupérées
+      } catch (err) {
+        console.error(err);
+        setError(err.message); // Mettre l'erreur dans l'état en cas d'échec
+      }
+    };
+
+    fetchCreneaux(); // Appeler la fonction pour récupérer les créneaux
   }, []);
 
   return (
