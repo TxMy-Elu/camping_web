@@ -76,7 +76,6 @@ const RegisteredUsers = () => {
         body: JSON.stringify(absentData),
       });
 
-
       if (!response.ok) {
         throw new Error("Échec de l'envoi des absences");
       }
@@ -89,23 +88,30 @@ const RegisteredUsers = () => {
   };
 
   return (
-    <div className="p-4">
-      <h2 className="text-2xl mb-4">
+    <div className="p-6 bg-gray-100 rounded-lg shadow-md">
+      <h2 className="text-3xl font-semibold mb-6 text-gray-800">
         Registered Users for Activité {activiteId}
       </h2>
 
-      {error && <div className="text-red-500 mb-4">{error}</div>}
+      {error && <div className="text-red-600 mb-4">{error}</div>}
 
       {users.length > 0 ? (
         <form onSubmit={handleSubmit}>
-          <ul>
+          <ul className="space-y-4">
             {users.map((user, index) => (
-              <li key={user.id_compte || index} className="mb-2">
-                {user.nom}
-                <label className="inline-block ml-4">
-                  Absent:
+              <li
+                key={user.id_compte || index}
+                className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-700">{user.nom}</span>
+                  <span className="text-gray-600">{user.prenom}</span>
+                </div>
+                <label className="flex items-center space-x-2">
+                  <span className="text-gray-600">Absent:</span>
                   <input
                     type="checkbox"
+                    className="form-checkbox h-5 w-5 text-blue-600"
                     checked={absentUsers[user.id_compte] || false}
                     onChange={() => handleCheckboxChange(user.id_compte)}
                   />
@@ -113,12 +119,15 @@ const RegisteredUsers = () => {
               </li>
             ))}
           </ul>
-          <button type="submit" className="mt-4 p-2 bg-blue-500 text-white">
+          <button
+            type="submit"
+            className="mt-6 px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700"
+          >
             Submit Absences
           </button>
         </form>
       ) : (
-        <p>No users registered for this activity.</p>
+        <p className="text-gray-600">No users registered for this activity.</p>
       )}
     </div>
   );
