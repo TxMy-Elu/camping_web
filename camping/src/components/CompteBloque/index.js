@@ -93,42 +93,58 @@ const CompteBloque = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-100 rounded-lg shadow-md max-w-4xl mx-auto">
+    <div className="p-6 bg-gray-100 rounded-lg shadow-md mx-auto">
       <h2 className="text-3xl font-semibold mb-6 text-gray-800 text-center">
         Comptes Bloqués
       </h2>
       {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
       <form onSubmit={handleSubmit}>
-        <ul className="list-none p-0">
-          {comptesBloques.map((compte) => (
-            <li
-              key={compte.id_compte}
-              className="p-4 mb-4 bg-white border border-gray-200 rounded-md flex items-center justify-between"
-            >
-              <div className="flex items-center gap-4">
-                <span className="text-lg font-medium text-gray-700">
-                  {compte.nom}
-                </span>
-                <span className="text-lg text-gray-600">{compte.prenom}</span>
-              </div>
-              <label className="flex items-center space-x-2">
-                <span className="text-gray-600">Absent:</span>
-                <input
-                  type="checkbox"
-                  className="form-checkbox h-5 w-5 text-blue-600"
-                  checked={bloqueCompte[compte.id_compte] || false}
-                  onChange={() => handleCheckboxChange(compte.id_compte)}
-                />
-              </label>
-            </li>
-          ))}
-        </ul>
-        <button
-          type="submit"
-          className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 w-full"
-        >
-          Submit Absences
-        </button>
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white rounded-lg overflow-hidden">
+            <thead>
+              <tr className="bg-gray-800 text-slate-100">
+                <th className="py-3 px-6 text-left first:rounded-tl-lg">Nom</th>
+                <th className="py-3 px-6 text-left">Prénom</th>
+                <th className="py-3 px-6 text-center last:rounded-tr-lg">Débloquer</th>
+              </tr>
+            </thead>
+            <tbody>
+              {comptesBloques.map((compte, index) => (
+                <tr 
+                  key={compte.id_compte}
+                  className="border-b border-gray-200 hover:bg-gray-50"
+                >
+                  <td className={`py-4 px-6 text-gray-700 font-bold ${
+                    index === comptesBloques.length - 1 ? 'rounded-bl-lg' : ''
+                  }`}>
+                    {compte.nom.toUpperCase()} 
+                  </td>
+                  <td className="py-4 px-6 text-gray-600 font-semibold">
+                    {compte.prenom.charAt(0).toUpperCase() + compte.prenom.slice(1).toLowerCase()}
+                  </td>
+                  <td className={`py-4 px-6 text-center ${
+                    index === comptesBloques.length - 1 ? 'rounded-br-lg' : ''
+                  }`}>
+                    <input
+                      type="checkbox"
+                      className="form-checkbox h-5 w-5 text-blue-600"
+                      checked={bloqueCompte[compte.id_compte] || false}
+                      onChange={() => handleCheckboxChange(compte.id_compte)}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="flex justify-end mt-6">
+          <button
+            type="submit"
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 w-32"
+          >
+            Débloquer
+          </button>
+        </div>
       </form>
     </div>
   );

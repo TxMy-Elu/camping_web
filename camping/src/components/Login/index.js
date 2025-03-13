@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -39,7 +41,9 @@ const Login = () => {
 
       // Stockage du token dans localStorage
       localStorage.setItem('token', data.token);
-      alert('Connexion réussie !');
+     
+      console.log("connecté");
+      navigate('/creneaux/allCreneaux');
       // Redirection ou autre action à effectuer après connexion réussie
     } catch (err) {
       console.error('Erreur:', err);
