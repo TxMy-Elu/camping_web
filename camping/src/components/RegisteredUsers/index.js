@@ -32,7 +32,15 @@ const RegisteredUsers = () => {
         }
 
         const data = await response.json();
-        setUsers(data); // Mettre à jour l'état avec les données récupérées
+        setUsers(data);
+        // Initialize absentUsers state with existing absent status
+        const initialAbsentState = {};
+        data.forEach(user => {
+          if (user.estAbs) {
+            initialAbsentState[user.id_compte] = true;
+          }
+        });
+        setAbsentUsers(initialAbsentState);
       } catch (err) {
         console.error(err);
         setError(err.message); // Mettre l'erreur dans l'état en cas d'échec
@@ -78,7 +86,11 @@ const RegisteredUsers = () => {
 
       if (!response.ok) {
         throw new Error("Échec de l'envoi des absences");
+      } else {
+        window.location.reload();
       }
+
+
 
       alert("Absences envoyées avec succès");
     } catch (err) {
@@ -92,8 +104,6 @@ const RegisteredUsers = () => {
       <h2 className="text-3xl font-semibold mb-6 text-gray-800">
         Registered Users for Activité {activiteId}
       </h2>
-
-      {error && <div className="text-red-600 mb-4">{error}</div>}
 
       {users.length > 0 ? (
         <form onSubmit={handleSubmit}>
@@ -112,7 +122,7 @@ const RegisteredUsers = () => {
                   <input
                     type="checkbox"
                     className="form-checkbox h-5 w-5 text-blue-600"
-                    checked={absentUsers[user.id_compte] || false}
+                    checked={absentUsers[user.id_compte] || user.estAbsent || false}
                     onChange={() => handleCheckboxChange(user.id_compte)}
                   />
                 </label>
@@ -127,7 +137,14 @@ const RegisteredUsers = () => {
           </button>
         </form>
       ) : (
-        <p className="text-gray-600">No users registered for this activity.</p>
+        <div className="text-center p-8">
+          <p className="text-xl text-gray-600">
+            Aucune personne n'est inscrite pour cette activité.
+          </p>
+          <p className="text-gray-500 mt-2">
+            Les inscriptions apparaîtront ici une fois que des personnes se seront inscrites.
+          </p>
+        </div>
       )}
     </div>
   );
