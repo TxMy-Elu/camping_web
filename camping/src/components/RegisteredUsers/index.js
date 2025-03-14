@@ -9,7 +9,7 @@ const RegisteredUsers = () => {
 
   useEffect(() => {
     const fetchCreneaux = async () => {
-      const token = localStorage.getItem("token"); // Récupérer le token du localStorage
+      const token = localStorage.getItem("token");
       if (!token) {
         setError("Token non trouvé");
         return;
@@ -21,19 +21,23 @@ const RegisteredUsers = () => {
           {
             method: "GET",
             headers: {
-              Authorization: `Bearer ${token}`, // Ajouter le token dans l'en-tête Authorization
+              Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
           }
         );
 
         if (!response.ok) {
-          throw new Error("Échec de la récupération des créneaux");
+          const errorData = await response.text();
+          console.error('Response status:', response.status);
+          console.error('Error details:', errorData);
+          throw new Error(`Échec de la récupération des créneaux: ${response.status} ${errorData}`);
         }
 
         const data = await response.json();
+        console.log('Received data:', data); // Debug log
         setUsers(data);
-        // Initialize absentUsers state with existing absent status
+        
         const initialAbsentState = {};
         data.forEach(user => {
           if (user.estAbs) {
@@ -42,13 +46,13 @@ const RegisteredUsers = () => {
         });
         setAbsentUsers(initialAbsentState);
       } catch (err) {
-        console.error(err);
-        setError(err.message); // Mettre l'erreur dans l'état en cas d'échec
+        console.error('Detailed error:', err);
+        setError(`Error: ${err.message}`);
       }
     };
 
-    fetchCreneaux(); // Appeler la fonction pour récupérer les créneaux
-  }, [activiteId]); // Added activiteId to dependency array
+    fetchCreneaux();
+  }, [activiteId]);
 
   const handleCheckboxChange = (userId) => {
     setAbsentUsers((prev) => ({
@@ -102,39 +106,51 @@ const RegisteredUsers = () => {
   return (
     <div className="p-6 bg-gray-100 rounded-lg shadow-md">
       <h2 className="text-3xl font-semibold mb-6 text-gray-800">
-        Registered Users for Activité {activiteId}
+        Liste des inscrits - Activité {activiteId}
       </h2>
 
       {users.length > 0 ? (
         <form onSubmit={handleSubmit}>
-          <ul className="space-y-4">
-            {users.map((user, index) => (
-              <li
-                key={user.id_compte || index}
-                className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-700">{user.nom}</span>
-                  <span className="text-gray-600">{user.prenom}</span>
-                </div>
-                <label className="flex items-center space-x-2">
-                  <span className="text-gray-600">Absent:</span>
-                  <input
-                    type="checkbox"
-                    className="form-checkbox h-5 w-5 text-blue-600"
-                    checked={absentUsers[user.id_compte] || user.estAbsent || false}
-                    onChange={() => handleCheckboxChange(user.id_compte)}
-                  />
-                </label>
-              </li>
-            ))}
-          </ul>
-          <button
-            type="submit"
-            className="mt-6 px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700"
-          >
-            Submit Absences
-          </button>
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white rounded-lg overflow-hidden">
+              <thead className="bg-gray-800 text-white">
+                <tr>
+                  <th className="px-6 py-3 text-left">Nom</th>
+                  <th className="px-6 py-3 text-left">Prénom</th>
+                  <th className="px-6 py-3 text-center">Absent</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {users.map((user, index) => (
+                  <tr 
+                    key={user.id_compte || index}
+                    className="hover:bg-gray-50"
+                  >
+                    <td className="px-6 py-4 text-gray-700">{user.nom.toUpperCase()}</td>
+                    <td className="px-6 py-4 text-gray-700">
+                      {user.prenom.charAt(0).toUpperCase() + user.prenom.slice(1)}
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <input
+                        type="checkbox"
+                        className="form-checkbox h-5 w-5 text-blue-600 rounded"
+                        checked={absentUsers[user.id_compte] || user.estAbsent || false}
+                        onChange={() => handleCheckboxChange(user.id_compte)}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="mt-6 text-right">
+            <button
+              type="submit"
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-200"
+            >
+              Enregistrer les absences
+            </button>
+          </div>
         </form>
       ) : (
         <div className="text-center p-8">

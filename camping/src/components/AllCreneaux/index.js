@@ -51,6 +51,45 @@ const AllCreneaux = () => {
     return slotDate < currentDate;
   };
 
+  const handleInscription = async (creneauId) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("Token non trouvé");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        "http://localhost:8080/inscription/insertOrUpdateInscription",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            jwt: token,
+            inscription: {
+              date_inscription: new Date().toISOString().split('T')[0]
+            },
+            creneaux: {
+              id_creneaux: creneauId
+            }
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Échec de l'inscription");
+      }
+
+      alert("Inscription réussie!");
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+    }
+  };
+
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <h1 className="text-3xl mb-6 text-center font-extrabold text-gray-900">
@@ -87,7 +126,7 @@ const AllCreneaux = () => {
 
               <div className="flex justify-between">
                 <button
-                  onClick={() => alert("Inscription à implémenter")}
+                  onClick={() => handleInscription(creneau.id_creneaux)}
                   className={`mt-4 py-2 px-4 rounded transition-colors duration-300 ${
                     isExpired
                       ? 'bg-gray-400 cursor-not-allowed'
@@ -104,9 +143,9 @@ const AllCreneaux = () => {
                       ? 'bg-gray-400 cursor-not-allowed'
                       : 'bg-blue-600 hover:bg-blue-800 text-white'
                   }`}
-                  disabled={!isExpired}
+                  disabled={isExpired}
                 >
-                  {isExpired? "Voir les inscrits" : "Expiré"}
+                  {isExpired? "Expiré" : "Voir les inscrits"}
                 </button>
               </div>
             </div>
