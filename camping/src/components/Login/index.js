@@ -7,47 +7,88 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  // Fonction pour gérer la soumission du formulaire
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); // Réinitialiser l'erreur au début de chaque soumission
+    setError('');
 
-    // Création du body dans le format x-www-form-urlencoded
     const formData = new URLSearchParams();
     formData.append('email', email);
     formData.append('password', password);
 
     try {
-      // Envoi des données à l'API pour la connexion avec x-www-form-urlencoded
-      const response = await fetch('http://localhost:8080/auth/login', {
+      // First API call for login
+      const loginResponse = await fetch('http://localhost:8080/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: formData.toString(), // Encodage des données dans le format attendu par l'API
+        headers: { 
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Accept': 'application/json'
+        },
+        body: formData.toString(),
       });
 
-      // Lecture de la réponse brute
-      const text = await response.text();
-      //console.log('Réponse brute:', text); // Debug : vérifier ce qui est renvoyé par l'API
+      // Check if response is empty
+      const responseText = await loginResponse.text();
+      console.log('Raw login response:', responseText);
 
-      const data = text ? JSON.parse(text) : {}; // Parse la réponse JSON
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Échec de la connexion');
+      let loginData;
+      try {
+        loginData = responseText ? JSON.parse(responseText) : {};
+      } catch (parseError) {
+        console.error('Parse error:', parseError);
+        throw new Error('Invalid server response');
       }
 
-      if (!data.token) {
-        throw new Error('Aucun token reçu');
+      console.log('Login response:', loginData);
+
+      if (!loginResponse.ok) {
+        throw new Error(loginData.message || 'Authentication failed (403)');
       }
 
-      // Stockage du token dans localStorage
-      localStorage.setItem('token', data.token);
-     
-      console.log("connecté");
+      // Update to use 'token' instead of 'jwt'
+      const token = loginData.token;
+      if (!token) {
+        throw new Error('No token received from server');
+      }
+      localStorage.setItem('jwt', token);
+
+      // Wait for 1 second to ensure token is properly registered
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Second API call for role with Bearer token
+      const roleResponse = await fetch('http://localhost:8080/compte/role', {
+        method: 'POST',  
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ jwt: token })
+      });
+
+      console.log('Request body:', { jwt: token });
+      console.log('Request headers:', {
+        'Authorization': `Bearer ${token}`
+      });
+
+      console.log('Role response status:', roleResponse.status);
+      const roleText = await roleResponse.text();
+      console.log('Role response text:', roleText);
+
+      if (!roleResponse.ok) {
+        console.error('Role response error:', roleText);
+        throw new Error(`Failed to fetch user role (${roleResponse.status})`);
+      }
+
+      const roleData = roleText ? JSON.parse(roleText) : {};
+      console.log('Role data:', roleData);
+
+      // Store the received data
+      localStorage.setItem('userRole', roleData.role);
+      localStorage.setItem('userId', roleData.id_compte); // Changed to match the response format
+      localStorage.setItem('userEmail', roleData.email);
       navigate('/creneaux/allCreneaux');
-      // Redirection ou autre action à effectuer après connexion réussie
     } catch (err) {
-      console.error('Erreur:', err);
-      setError(err.message); // Affichage de l'erreur dans l'interface utilisateur
+      console.error('Full error:', err);
+      setError(err.message);
     }
   };
 
@@ -55,13 +96,13 @@ const Login = () => {
     <div className="flex items-center justify-center h-screen">
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded shadow-md w-80">
         <h2 className="text-2xl mb-4">Login</h2>
-        {error && <p className="text-red-500">{error}</p>} {/* Affichage de l'erreur si présente */}
+        {error && <p className="text-red-500">{error}</p>}
         <div className="mb-4">
           <label className="block text-gray-700">Email</label>
           <input
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)} // Met à jour l'état de l'email
+            onChange={(e) => setEmail(e.target.value)}
             className="w-full p-2 border border-gray-300 rounded"
             required
           />
@@ -71,7 +112,7 @@ const Login = () => {
           <input
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)} // Met à jour l'état du mot de passe
+            onChange={(e) => setPassword(e.target.value)}
             className="w-full p-2 border border-gray-300 rounded"
             required
           />

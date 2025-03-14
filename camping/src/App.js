@@ -10,6 +10,7 @@ import AllCreneaux from './components/AllCreneaux';
 import InsertOrUpdateInscription from './components/InsertOrUpdateInscription';
 import DeleteInscription from './components/DeleteInscription';
 import RegisteredUsers from './components/RegisteredUsers';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
@@ -19,14 +20,55 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/auth/login" element={<Login />} />
-          <Route path="/compte/allCompte" element={<AllCompte />} />
-          <Route path="/compte/:id" element={<CompteDetails />} />
-          <Route path="/compte/compteBloque" element={<CompteBloque />} />
-          <Route path="/creneaux/allCreneaux" element={<AllCreneaux />} />
-          <Route path="/inscription/insertOrUpdateInscription" element={<InsertOrUpdateInscription />} />
-          <Route path="/inscription/deleteInscription" element={<DeleteInscription />} />
-          <Route path="/inscription/getRegisteredUsers/:activiteId" element={<RegisteredUsers />} />
-          
+          <Route 
+            path="/compte/allCompte" 
+            element={<ProtectedRoute 
+              element={<AllCompte />} 
+              allowedRoles={['client', 'admin', 'client_bloque', 'animateur']} 
+            />} 
+          />
+          <Route 
+            path="/compte/compteBloque" 
+            element={<ProtectedRoute 
+              element={<CompteBloque />} 
+              allowedRoles={['admin']} 
+            />} 
+          />
+          <Route 
+            path="/creneaux/allCreneaux" 
+            element={<ProtectedRoute 
+              element={<AllCreneaux />} 
+              allowedRoles={['client', 'admin', 'animateur']} 
+            />} 
+          />
+          <Route 
+            path="/inscription/insertOrUpdateInscription" 
+            element={<ProtectedRoute 
+              element={<InsertOrUpdateInscription />} 
+              allowedRoles={['client', 'admin', 'animateur']} 
+            />} 
+          />
+          <Route 
+            path="/inscription/deleteInscription" 
+            element={<ProtectedRoute 
+              element={<DeleteInscription />} 
+              allowedRoles={['client', 'admin', 'animateur']} 
+            />} 
+          />
+          <Route 
+            path="/inscription/getRegisteredUsers/:activiteId" 
+            element={<ProtectedRoute 
+              element={<RegisteredUsers />} 
+              allowedRoles={['admin', 'animateur', 'client']} 
+            />} 
+          />
+          <Route 
+            path="/compte/:id" 
+            element={<ProtectedRoute 
+              element={<CompteDetails />} 
+              allowedRoles={['client']} 
+            />} 
+          />
         </Routes>
       </div>
     </Router>
