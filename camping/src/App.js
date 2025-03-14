@@ -24,7 +24,7 @@ function App() {
             path="/compte/allCompte" 
             element={<ProtectedRoute 
               element={<AllCompte />} 
-              allowedRoles={['client', 'admin', 'client_bloque', 'animateur']} 
+              allowedRoles={['admin']} 
             />} 
           />
           <Route 

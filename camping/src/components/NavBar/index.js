@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const isAuthenticated = !!localStorage.getItem('jwt');
+  const isAuthenticated = !!localStorage.getItem('token');
   const userRole = localStorage.getItem('userRole');
 
   const handleLogout = () => {
@@ -21,7 +21,9 @@ const Navbar = () => {
             <Link to="/auth/login" className="text-white hover:underline">Se connecter</Link>
           ) : (
             <>
-              <Link to="/compte/allCompte" className="text-white hover:underline">Comptes</Link>
+              {userRole === 'admin' && (
+                <Link to="/compte/allCompte" className="text-white hover:underline">Comptes</Link>
+              )}
               <Link to="/creneaux/allCreneaux" className="text-white hover:underline">Créneaux</Link>
               {userRole === 'admin' && (
                 <Link to="/compte/compteBloque" className="text-white hover:underline">Comptes Bloqués</Link>
