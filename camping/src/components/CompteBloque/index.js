@@ -81,10 +81,10 @@ const CompteBloque = () => {
       );
 
       if (!response.ok) {
-        throw new Error("Échec de l'envoi des absences");
+        throw new Error("Échec de l'envoi du deblockage des comptes");
       }
 
-      alert("Absences envoyées avec succès");
+      alert("Comptes debloqués avec succès");
       refreshPage(); // Refresh the page after successful submission
     } catch (err) {
       console.error(err);
