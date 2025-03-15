@@ -25,12 +25,16 @@ const Navbar = () => {
             </Link>
           ) : (
             <>
-              <Link
-                to="/creneaux/allCreneaux"
-                className="text-white hover:underline"
-              >
-                Créneaux
-              </Link>
+              {(userRole === "admin" ||
+                userRole === "client" ||
+                userRole === "animateur") && (
+                <Link
+                  to="/creneaux/allCreneaux"
+                  className="text-white hover:underline"
+                >
+                  Créneaux
+                </Link>
+              )}
               {userRole === "admin" && (
                 <Link
                   to="/compte/allCompte"
