@@ -7,7 +7,6 @@ import AllCompte from './components/AllCompte';
 import CompteDetails from './components/CompteDetails';
 import CompteBloque from './components/CompteBloque';
 import AllCreneaux from './components/AllCreneaux';
-import InsertOrUpdateInscription from './components/InsertOrUpdateInscription';
 import DeleteInscription from './components/DeleteInscription';
 import RegisteredUsers from './components/RegisteredUsers';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -38,13 +37,6 @@ function App() {
             path="/creneaux/allCreneaux" 
             element={<ProtectedRoute 
               element={<AllCreneaux />} 
-              allowedRoles={['client', 'admin', 'animateur']} 
-            />} 
-          />
-          <Route 
-            path="/inscription/insertOrUpdateInscription" 
-            element={<ProtectedRoute 
-              element={<InsertOrUpdateInscription />} 
               allowedRoles={['client', 'admin', 'animateur']} 
             />} 
           />

@@ -5,41 +5,109 @@ const AllCreneaux = () => {
   const navigate = useNavigate();
   const [creneaux, setCreneaux] = useState([]);
   const [error, setError] = useState("");
+  const [userInscriptions, setUserInscriptions] = useState({});
+  const [registeredUsers, setRegisteredUsers] = useState({});
 
   useEffect(() => {
-    const fetchCreneaux = async () => {
-      const token = localStorage.getItem("token"); // Récupérer le token du localStorage
+    const fetchCreneauxAndInscriptions = async () => {
+      const token = localStorage.getItem("token");
+      const userEmail = localStorage.getItem("userEmail");
+      
       if (!token) {
         setError("Token non trouvé");
         return;
       }
 
       try {
-        const response = await fetch(
-          "http://localhost:8080/creneaux/allCreneaux",
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`, // Ajouter le token dans l'en-tête Authorization
-              "Content-Type": "application/json",
-            },
+        // Fetch all creneaux
+        const creneauxResponse = await fetch("http://localhost:8080/creneaux/allCreneaux", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!creneauxResponse.ok) throw new Error("Échec de la récupération des créneaux");
+        const creneauxData = await creneauxResponse.json();
+        setCreneaux(creneauxData);
+
+        // Check inscriptions for each creneau
+        const inscriptionsMap = {};
+        const usersMap = {};
+        
+        await Promise.all(creneauxData.map(async (creneau) => {
+          const inscriptionResponse = await fetch(
+            `http://localhost:8080/inscription/getRegisteredUsers/${creneau.id_creneaux}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          
+          if (inscriptionResponse.ok) {
+            const users = await inscriptionResponse.json();
+            usersMap[creneau.id_creneaux] = users;
+            // Check if current user is registered
+            inscriptionsMap[creneau.id_creneaux] = users.some(user => user.email === userEmail);
           }
-        );
-
-        if (!response.ok) {
-          throw new Error("Échec de la récupération des créneaux");
-        }
-
-        const data = await response.json();
-        setCreneaux(data); // Mettre à jour l'état avec les données récupérées
+        }));
+        
+        setUserInscriptions(inscriptionsMap);
+        setRegisteredUsers(usersMap);
       } catch (err) {
         console.error(err);
-        setError(err.message); // Mettre l'erreur dans l'état en cas d'échec
+        setError(err.message);
       }
     };
 
-    fetchCreneaux(); // Appeler la fonction pour récupérer les créneaux
+    fetchCreneauxAndInscriptions();
   }, []);
+
+  const handleUnsubscribe = async (creneauId) => {
+    const token = localStorage.getItem("token");
+    
+    if (!token) {
+      setError("Token non trouvé");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:8080/inscription/deleteInscription", {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          jwt: token,
+          creneaux: {
+            id_creneaux: creneauId
+          }
+        }),
+      });
+
+      if (!response.ok) throw new Error("Échec de la désinscription");
+
+      // Update local state
+      setUserInscriptions(prev => ({
+        ...prev,
+        [creneauId]: false
+      }));
+      
+      // Remove user from registered users list
+      setRegisteredUsers(prev => ({
+        ...prev,
+        [creneauId]: prev[creneauId].filter(user => user.email !== localStorage.getItem("userEmail"))
+      }));
+
+      alert("Désinscription réussie!");
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+    }
+  };
 
   const nav = (id) => () => {
     navigate(`../inscription/getRegisteredUsers/${id}`);
@@ -158,13 +226,13 @@ const AllCreneaux = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {creneaux.map((creneau) => {
           const isExpired = isPastDate(creneau.date_heure);
+          const isUserRegistered = userInscriptions[creneau.id_creneaux];
+          const registeredCount = registeredUsers[creneau.id_creneaux]?.length || 0;
+
           return (
-            <div
-              key={creneau.id_creneaux}
-              className={`bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 ${
-                isExpired ? 'opacity-75' : ''
-              }`}
-            >
+            <div key={creneau.id_creneaux} className={`bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 ${
+              isExpired ? 'opacity-75' : ''
+            }`}>
               <img 
                 src={getActivityImage(creneau.nom_animation)}
                 alt={creneau.nom_animation}
@@ -189,27 +257,26 @@ const AllCreneaux = () => {
               </p>
 
               <div className="flex justify-between">
-                <button
-                  onClick={() => handleInscription(creneau.id_creneaux)}
-                  className={`mt-4 py-2 px-4 rounded transition-colors duration-300 ${
-                    isExpired
-                      ? 'bg-gray-400 cursor-not-allowed'
-                      : 'bg-blue-600 hover:bg-blue-800 text-white'
-                  }`}
-                  disabled={isExpired}
-                >
-                  {isExpired ? 'Expiré' : "S'inscrire"}
-                </button>
+                {!isExpired && (
+                  <button
+                    onClick={() => isUserRegistered 
+                      ? handleUnsubscribe(creneau.id_creneaux)
+                      : handleInscription(creneau.id_creneaux)
+                    }
+                    className={`mt-4 py-2 px-4 rounded transition-colors duration-300 ${
+                      isUserRegistered
+                        ? 'bg-red-600 hover:bg-red-700 text-white'
+                        : 'bg-blue-600 hover:bg-blue-700 text-white'
+                    }`}
+                  >
+                    {isUserRegistered ? 'Se désinscrire' : "S'inscrire"}
+                  </button>
+                )}
                 <button
                   onClick={nav(creneau.id_creneaux)}
-                  className={`mt-4 py-2 px-4 rounded transition-colors duration-300 ${
-                    isExpired
-                      ? 'bg-gray-400 cursor-not-allowed'
-                      : 'bg-blue-600 hover:bg-blue-800 text-white'
-                  }`}
-                  disabled={isExpired}
+                  className="mt-4 py-2 px-4 rounded bg-blue-600 hover:bg-blue-700 text-white transition-colors duration-300"
                 >
-                  {isExpired? "Expiré" : "Voir les inscrits"}
+                  Voir les inscrits
                 </button>
               </div>
             </div>
