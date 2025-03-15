@@ -93,59 +93,116 @@ const CompteBloque = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-100 rounded-lg shadow-md mx-auto">
-      <h2 className="text-3xl font-semibold mb-6 text-gray-800 text-center">
-        Comptes Bloqués
-      </h2>
-      {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white rounded-lg overflow-hidden">
-            <thead>
-              <tr className="bg-gray-800 text-slate-100">
-                <th className="py-3 px-6 text-left first:rounded-tl-lg">Nom</th>
-                <th className="py-3 px-6 text-left">Prénom</th>
-                <th className="py-3 px-6 text-center last:rounded-tr-lg">Débloquer</th>
-              </tr>
-            </thead>
-            <tbody>
-              {comptesBloques.map((compte, index) => (
-                <tr 
+    <div className="p-8 bg-gray-50 min-h-screen">
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-bold text-gray-900">Comptes Bloqués</h1>
+          <p className="mt-2 text-gray-600">
+            {comptesBloques.length}{" "}
+            {comptesBloques.length > 1 ? "comptes bloqués" : "compte bloqué"}
+          </p>
+        </div>
+
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-r-lg">
+            <p className="font-medium">Une erreur est survenue</p>
+            <p>{error}</p>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+            {comptesBloques.length > 0 ? (
+              comptesBloques.map((compte, index) => (
+                <div
                   key={compte.id_compte}
-                  className="border-b border-gray-200 hover:bg-gray-50"
+                  className={`flex items-center justify-between p-4 hover:bg-gray-50 transition-colors ${
+                    index !== comptesBloques.length - 1
+                      ? "border-b border-gray-200"
+                      : ""
+                  }`}
                 >
-                  <td className={`py-4 px-6 text-gray-700 font-bold ${
-                    index === comptesBloques.length - 1 ? 'rounded-bl-lg' : ''
-                  }`}>
-                    {compte.nom.toUpperCase()} 
-                  </td>
-                  <td className="py-4 px-6 text-gray-600 font-semibold">
-                    {compte.prenom.charAt(0).toUpperCase() + compte.prenom.slice(1).toLowerCase()}
-                  </td>
-                  <td className={`py-4 px-6 text-center ${
-                    index === comptesBloques.length - 1 ? 'rounded-br-lg' : ''
-                  }`}>
+                  <div className="flex items-center space-x-4">
+                    <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
+                      <span className="text-red-600 font-semibold text-lg">
+                        {compte.prenom[0].toUpperCase()}
+                      </span>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">
+                        {compte.nom.toUpperCase()}
+                        {compte.prenom.charAt(0).toUpperCase()}{" "}
+                        {compte.prenom.slice(1).toLowerCase()}
+                      </h3>
+                      <p className="text-sm text-gray-500">
+                        Compte bloqué pour absences excessives
+                      </p>
+                    </div>
+                  </div>
+
+                  <label className="inline-flex items-center">
                     <input
                       type="checkbox"
-                      className="form-checkbox h-5 w-5 text-blue-600"
+                      className="form-checkbox h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                       checked={bloqueCompte[compte.id_compte] || false}
                       onChange={() => handleCheckboxChange(compte.id_compte)}
                     />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="flex justify-end mt-6">
-          <button
-            type="submit"
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 w-32"
-          >
-            Débloquer
-          </button>
-        </div>
-      </form>
+                    <span className="ml-2 text-sm text-gray-600">
+                      Débloquer
+                    </span>
+                  </label>
+                </div>
+              ))
+            ) : (
+              <div className="py-12 text-center">
+                <svg
+                  className="mx-auto h-12 w-12 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <h3 className="mt-2 text-sm font-medium text-gray-900">
+                  Aucun compte bloqué
+                </h3>
+                <p className="mt-1 text-sm text-gray-500">
+                  Il n'y a actuellement aucun compte bloqué dans le système.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {comptesBloques.length > 0 && (
+            <div className="mt-6 flex justify-end">
+              <button
+                type="submit"
+                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+              >
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                  />
+                </svg>
+                Débloquer les comptes
+              </button>
+            </div>
+          )}
+        </form>
+      </div>
     </div>
   );
 };
