@@ -130,8 +130,8 @@ const CompteBloque = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-900">
-                        {compte.nom.toUpperCase()}
-                        {compte.prenom.charAt(0).toUpperCase()}{" "}
+                        {compte.nom.toUpperCase()}{" "}
+                        {compte.prenom.charAt(0).toUpperCase()}
                         {compte.prenom.slice(1).toLowerCase()}
                       </h3>
                       <p className="text-sm text-gray-500">
