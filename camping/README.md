@@ -1,9 +1,3 @@
-
-
-
-          
-Je vais mettre à jour le README pour inclure une documentation complète des routes API. Voici la version mise à jour :
-
 # Application Web de Camping Le Bois Doré
 
 Cette application React permet la gestion d'un camping, incluant les comptes utilisateurs, les activités et les inscriptions.
