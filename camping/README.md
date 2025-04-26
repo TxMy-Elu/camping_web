@@ -1,70 +1,141 @@
-# Getting Started with Create React App
+Here is a README that documents all your main React component routes, their file locations, and what each page displays. This will help users and developers understand the navigation and functionality of your camping web application.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+---
 
-## Available Scripts
+# Camping Web Application
 
-In the project directory, you can run:
+This project is a React-based web application for managing a camping site, including user accounts, activities, and registrations.
 
-### `npm start`
+## Table of Contents
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- [Routes & Components](#routes--components)
+  - [Home (`/`)](#home-)
+  - [Login (`/auth/login`)](#login-authlogin)
+  - [All Créneaux (`/creneaux/allCreneaux`)](#all-créneaux-creneauxallcreneaux)
+  - [Registered Users (`/inscription/getRegisteredUsers/:activiteId`)](#registered-users-inscriptiongetregisteredusersactiviteid)
+  - [All Comptes (`/compte/allCompte`)](#all-comptes-compteallcompte)
+  - [Comptes Bloqués (`/compte/compteBloque`)](#comptes-bloqués-comptecomptebloque)
+  - [Navigation Bar (Navbar)](#navigation-bar-navbar)
+- [File Structure](#file-structure)
+- [Screenshots](#screenshots)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## Routes & Components
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Home (`/`)
+**File:** <mcfile name="index.js" path="c:/wamp64/www/stage/camping_web/camping/src/components/Home/index.js"></mcfile>
 
-### `npm run build`
+- **What it displays:**  
+  - Hero section with the camping name and a background image.
+  - About section describing the camping site.
+  - Activities section with cards for outdoor, aquatic, sports, entertainment, wellness, and kids activities.
+  - Facilities section for accommodation and services.
+  - Contact information.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Login (`/auth/login`)
+**File:** <mcfile name="index.js" path="c:/wamp64/www/stage/camping_web/camping/src/components/Login/index.js"></mcfile>
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- **What it displays:**  
+  - Login form for email and password.
+  - Handles authentication and stores the JWT token and user role in localStorage.
+  - Redirects to the home page on successful login.
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### All Créneaux (`/creneaux/allCreneaux`)
+**File:** <mcfile name="index.js" path="c:/wamp64/www/stage/camping_web/camping/src/components/AllCreneaux/index.js"></mcfile>
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- **What it displays:**  
+  - List of all activity slots (créneaux) as cards.
+  - Each card shows activity name, date/time, duration, total places, and remaining places.
+  - Buttons to register/unregister for an activity and to view registered users.
+  - Handles registration and unregistration logic.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+---
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Registered Users (`/inscription/getRegisteredUsers/:activiteId`)
+**File:** <mcfile name="index.js" path="c:/wamp64/www/stage/camping_web/camping/src/components/RegisteredUsers/index.js"></mcfile>
 
-## Learn More
+- **What it displays:**  
+  - Details of the selected activity (image, description, date, duration, places).
+  - List of users registered for the activity.
+  - For admins/animateurs: checkboxes to mark users as absent and submit absences.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+---
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### All Comptes (`/compte/allCompte`)
+**File:** <mcfile name="index.js" path="c:/wamp64/www/stage/camping_web/camping/src/components/AllCompte/index.js"></mcfile>
 
-### Code Splitting
+- **What it displays:**  
+  - List of all user accounts as cards.
+  - Each card shows user name, email, role, number of absences, and account status (active/bloqué).
+  - Error message if the token is missing or the fetch fails.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+---
 
-### Analyzing the Bundle Size
+### Comptes Bloqués (`/compte/compteBloque`)
+**File:** <mcfile name="index.js" path="c:/wamp64/www/stage/camping_web/camping/src/components/CompteBloque/index.js"></mcfile>
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- **What it displays:**  
+  - List of blocked user accounts.
+  - Each card shows user info and a checkbox to unblock the account.
+  - Button to submit unblocking requests.
+  - Error message if the token is missing or the fetch fails.
 
-### Making a Progressive Web App
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### Navigation Bar (Navbar)
+**File:** <mcfile name="index.js" path="c:/wamp64/www/stage/camping_web/camping/src/components/NavBar/index.js"></mcfile>
 
-### Advanced Configuration
+- **What it displays:**  
+  - Top navigation bar with links:
+    - Home
+    - Login (if not authenticated)
+    - Créneaux (if authenticated)
+    - Comptes and Comptes Bloqués (if admin)
+    - Logout button (if authenticated)
+  - Handles logout logic and navigation.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+---
 
-### Deployment
+## File Structure
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+```
+src/
+  components/
+    AllCompte/
+      index.js
+    AllCreneaux/
+      index.js
+    CompteBloque/
+      index.js
+    Home/
+      index.js
+    Login/
+      index.js
+    NavBar/
+      index.js
+    RegisteredUsers/
+      index.js
+```
 
-### `npm run build` fails to minify
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Screenshots
+
+> _You can add screenshots of each page here to visually document what each route displays._
+
+---
+
+## Notes
+
+- All API calls require a valid JWT token stored in `localStorage` as `token`.
+- User roles (`admin`, `client`, `animateur`) determine access to certain routes and features.
+- The UI uses Tailwind CSS for styling.
+
+---
+
+If you need more details about a specific route or want to see example screenshots, let me know!
